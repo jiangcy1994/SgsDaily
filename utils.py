@@ -1,26 +1,62 @@
 import time
-import win32api, win32con
 
-__all__ = ['lbtton_click_wait', 'send_input_wait', 'default_wait_interval']
+from win32 import *
+from config import *
 
-default_wait_interval = 3
+__all__ = ['Daily', 'QuitLogoAndActivity']
 
-def lbtton_click(handle, x, y):
-    win32api.PostMessage(handle, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, win32api.MAKELONG(x, y))
-    win32api.PostMessage(handle, win32con.WM_LBUTTONUP, 0, win32api.MAKELONG(x, y))
+def Daily(hwnd, loop_times):
+    '''每日（逐鹿）'''
+    LButtonClick(hwnd, 815, 432) # 进逐鹿
+    time.sleep(operation_interval)
+    
+    LButtonClick(hwnd, 450, 50) # 跳过动画
+    print('已进入逐鹿')
+    time.sleep(operation_interval)
+    
+    LButtonClick(hwnd, 628, 44) # 困难
+    print('已进入困难')
+    time.sleep(operation_interval)
 
-def send_input(handle, msg):
-    for c in msg:
-        if c == "\n":
-            win32api.PostMessage(handle, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
-            win32api.PostMessage(handle, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
-        else:
-            win32api.PostMessage(handle, win32con.WM_CHAR, ord(c), 0)
+    LButtonClick(hwnd, 155, 240) # 第一章
+    print('已进入第一章')
+    time.sleep(operation_interval)
 
-def lbtton_click_wait(handle, x, y, wait_time=default_wait_interval):
-    lbtton_click(handle, x, y)
-    time.sleep(wait_time)
+    # 打逐鹿
+    for i in range(loop_times):
+        print('开始第{0}次'.format(i + 1))
+        LButtonClick(hwnd, 385, 240) # 第一城
+        time.sleep(operation_interval)
+        
+        LButtonClick(hwnd, 1085, 400) # 第五关
+        time.sleep(operation_interval)
+        
+        LButtonClick(hwnd, 950, 570) # 进入挑战
+        time.sleep(operation_interval)
+        
+        if i == 0:
+            # 开5倍速
+            for j in range(4):
+                LButtonClick(hwnd, 100, 512) # 加速
+                time.sleep(operation_interval)
+        time.sleep(battle_interval)
 
-def send_input_wait(handle, msg, wait_time=default_wait_interval):
-    send_input(handle, msg)
-    time.sleep(wait_time)
+        LButtonClick(hwnd, 550, 300) # 退出
+        print('结束第{0}次'.format(i + 1))
+        time.sleep(operation_interval)
+
+def QuitLogoAndActivity(hwnd):
+    '''关闭logo和活动'''
+    time.sleep(operation_interval)
+    LButtonClick(hwnd, 930, 158) # 关logo
+    time.sleep(operation_interval)
+    
+    LButtonClick(hwnd, 1105, 88) # 关活动
+    time.sleep(operation_interval)
+    
+    LButtonClick(hwnd, 450, 50)  # 关莫名其妙的卡屏
+    time.sleep(operation_interval)
+    
+    LButtonClick(hwnd, 450, 50)
+    time.sleep(operation_interval)
+        
